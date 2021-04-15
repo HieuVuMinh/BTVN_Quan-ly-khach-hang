@@ -51,4 +51,5 @@ public class Room {
                 ", identity='" + human.getIdentity() + '\'' + " dayRent=" + dayRent +
                 ", typeRent='" + typeRent + '\'' + ", priceRent=" + priceRent + '}';
     }
+
 }

@@ -43,7 +43,6 @@ public class Main {
         System.out.println("2. Hiển thị thông tin khách trọ");
         System.out.println("3. Xóa thông tin khách trọ");
         System.out.println("4. Tính tiền cần thanh toán");
-        System.out.println("5. Thêm thông tin khách trọ");
         System.out.println("0. Thoát");
     }
 }

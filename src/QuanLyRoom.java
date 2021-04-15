@@ -1,41 +1,48 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
-public class QuanLyRoom extends Room{
-    public static final int size = 6;
+public class QuanLyRoom {
+    List<Room> roomsList = new ArrayList<>();
 
-    public QuanLyRoom(){
+    public QuanLyRoom() {
         Human human1 = new Human("Hieu1", 25, "156987453");
         Human human2 = new Human("Hieu2", 15, "156983641");
         Human human3 = new Human("Hieu3", 22, "156987987");
         Human human4 = new Human("Hieu4", 44, "156901234");
-        Human human5 = new Human("Hieu5", 21, "156998732");
-        Human human6 = new Human("Hieu6", 12, "156987987");
-        room[0] = new Room(3, "VIP", 500, human1);
-        room[1] = new Room(1, "NORMAL", 200, human2);
-        room[2] = new Room(5, "NORMAL", 200, human3);
-        room[3] = new Room(2, "NORMAL", 200, human4);
-        room[4] = new Room(4, "VIP", 500, human5);
-        room[5] = new Room(6, "VIP", 500, human6);
+
+        Room quanLyRoom1 = new Room(3, "VIP", 500, human1);
+        Room quanLyRoom2 = new Room(1, "NORMAL", 200, human2);
+        Room quanLyRoom3 = new Room(5, "NORMAL", 200, human3);
+        Room quanLyRoom4 = new Room(2, "NORMAL", 200, human4);
+
+        roomsList.add(quanLyRoom1);
+        roomsList.add(quanLyRoom2);
+        roomsList.add(quanLyRoom3);
+        roomsList.add(quanLyRoom4);
     };
 
     Scanner sc = new Scanner(System.in);
 
-    Room[] room = new Room[size];
-
-
     //Hàm hiển thị danh sách khách hàng
-    public void displayHuman(){
-        for (int i = 0; i < room.length; i++){
-            System.out.println(room[i]);
+    public void displayHuman() {
+        for (int i = 0; i < roomsList.size(); i++) {
+            Room room = roomsList.get(i);
+            System.out.println(room.toString());
         }
     }
 
     //Hàm thêm khách thuê phòng
-    public void addHuman(){
+    public void addHuman() {
         // Điền thông tin khách hàng
-        Human human = inputInfo();
-
+        Human human = inputInfoHuman();
         // Điền thông tin phòng
+        Room room = inputInfoRoom(human);
+        // Thêm thông tin phòng vào mảng
+        roomsList.add(room);
+    }
+
+    private Room inputInfoRoom(Human human) {
         System.out.println("Nhập ngày thuê phòng: ");
         int dayRent = sc.nextInt();
         sc.nextLine();
@@ -43,16 +50,11 @@ public class QuanLyRoom extends Room{
         String typeRent = sc.nextLine();
         System.out.println("Nhập giá phòng: ");
         double priceRent = sc.nextDouble();
-        Room[] newRoom = new Room[size+1];
-        for (int i = 0; i < size; i++){
-            newRoom[i] = room[i];
-        }
-        newRoom[size] = new Room(dayRent, typeRent, priceRent, human);
-        this.room = newRoom;
+        Room room = new Room(dayRent, typeRent, priceRent, human);
+        return room;
     }
 
-    // Hàm tạo thông tin khách hàng
-    private Human inputInfo() {
+    private Human inputInfoHuman() {
         System.out.println("Điền thông tin khách hàng bên dưới");
         System.out.println("Nhập tên: ");
         String name = sc.nextLine();
@@ -66,12 +68,35 @@ public class QuanLyRoom extends Room{
     }
 
     // Hàm xóa thông tin 1 khách hàng
-    public Room[] deleteHuman(String id){
+    public void deleteHuman(String id) {
         int k = -1;
         int count = -1;
-        for (int i = 0; i < room.length; i++){
+        for (int i = 0; i < roomsList.size(); i++){
             count++;
-            if ((room[i].getHuman().getIdentity()).equals(id)){
+            Room room = roomsList.get(i);
+            String identity = room.getHuman().getIdentity();
+            if (identity.equals(id)){
+                k = 1;
+                break;
+            }
+        }
+        if (k == -1){
+            System.out.println("Không tìm thấy khách hàng");
+        }else {
+            Room room = roomsList.get(count);
+            roomsList.remove(room);
+        }
+    }
+
+     //Hàm tính tổng tiền cần phải trả nếu một khách hàng trả phòng
+    public void payPrice(String id) {
+        int k = -1;
+        int count = -1;
+        for (int i = 0; i < roomsList.size(); i++){
+            count++;
+            Room room = roomsList.get(i);
+            String identity = room.getHuman().getIdentity();
+            if (identity.equals(id)){
                 k = 1;
                 break;
             }
@@ -79,28 +104,11 @@ public class QuanLyRoom extends Room{
         if (k == -1){
             System.out.println("Không tìm thấy khách hàng");
         } else {
-            Room[] newRoom = new Room[room.length - 1];
-            for (int i = 0; i < count; i++){
-                newRoom[i] = room[i] ;
-            }
-            for (int j = count; j < newRoom.length; j++){
-                newRoom[j] = room[j + 1];
-            }
-            this.room = newRoom;
+            Room room = roomsList.get(count);
+            double total = room.getDayRent() * room.getPriceRent();
+            System.out.printf("Số tiền cần phải trả trong %d ngày tại loại phòng %s: %fUSD",room.getDayRent(),
+                    room.getTypeRent(), total);
         }
-        return this.room;
-    }
-
-    // Hàm tính tổng tiền cần phải trả nếu một khách hàng trả phòng
-    public Room[] payPrice(String id){
-        for (int i = 0; i < room.length; i++){
-            if((room[i].getHuman().getIdentity().equals(id))){
-                System.out.println("Khách ở tại phòng loại " + (room[i].getTypeRent()) + " có giá: " + (room[i].getPriceRent()) + "USD/Đêm" +
-                        ". Tổng số tiền phải trả: " + (room[i].getPriceRent() * room[i].getDayRent()) + " USD");
-                break;
-            }
-        }
-        return deleteHuman(id);
     }
 
 }
